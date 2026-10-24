@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './App.css'
 
@@ -16,9 +15,9 @@ const navigationLinks = [
 ]
 
 const moods = [
-  { id: 'happy', label: 'Happy', emoji: '😊' },
-  { id: 'calm', label: 'Calm', emoji: '😌' },
-  { id: 'low', label: 'Low', emoji: '😔' },
+  { name: 'happy', image: '/happy.png', label: 'Happy' },
+  { name: 'neutral', image: '/neutral.png', label: 'Okay' },
+  { name: 'sad', image: '/sad.png', label: 'Low' },
 ]
 
 const features = [
@@ -53,57 +52,58 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
   function startAssessment() {
-  setCurrentQuestion(0)
-  setAnswers({})
-  setCurrentPage('assessment')
-}
-
-function openAssessmentLibrary() {
-  setCurrentPage('library')
-}
-
-function selectAnswer(value) {
-  const question = academicPressureQuestions[currentQuestion]
-
-  setAnswers((previous) => ({
-    ...previous,
-    [question.id]: value,
-  }))
-}
-
-function nextQuestion() {
-  if (currentQuestion < academicPressureQuestions.length - 1) {
-    setCurrentQuestion((previous) => previous + 1)
-  } else {
-    setCurrentPage('results')
+    setCurrentQuestion(0)
+    setAnswers({})
+    setCurrentPage('assessment')
   }
-}
 
-function calculateResults() {
-  const results = {}
+  function openAssessmentLibrary() {
+    setCurrentPage('library')
+  }
 
-  for (const question of academicPressureQuestions) {
-    if (!results[question.category]) {
-      results[question.category] = []
-    }
+  function selectAnswer(value) {
+    const question = academicPressureQuestions[currentQuestion]
 
-    const answer = answers[question.id]
+    setAnswers((previous) => ({
+      ...previous,
+      [question.id]: value,
+    }))
+  }
 
-    if (typeof answer === 'number') {
-      results[question.category].push(answer)
+  function nextQuestion() {
+    if (currentQuestion < academicPressureQuestions.length - 1) {
+      setCurrentQuestion((previous) => previous + 1)
+    } else {
+      setCurrentPage('results')
     }
   }
 
-  return Object.entries(results).map(([category, scores]) => ({
-    category,
-    title: academicPressureCategories[category],
-    average:
-      scores.length > 0
-        ? scores.reduce((sum, score) => sum + score, 0) / scores.length
-        : null,
-    answered: scores.length,
-  }))
-}
+  function calculateResults() {
+    const results = {}
+
+    for (const question of academicPressureQuestions) {
+      if (!results[question.category]) {
+        results[question.category] = []
+      }
+
+      const answer = answers[question.id]
+
+      if (typeof answer === 'number') {
+        results[question.category].push(answer)
+      }
+    }
+
+    return Object.entries(results).map(([category, scores]) => ({
+      category,
+      title: academicPressureCategories[category],
+      average:
+        scores.length > 0
+          ? scores.reduce((sum, score) => sum + score, 0) / scores.length
+          : null,
+      answered: scores.length,
+
+    }))
+  }
 
   function handleMoodSelect(mood) {
     setSelectedMood(mood)
@@ -118,211 +118,209 @@ function calculateResults() {
     setSubmitted(true)
   }
   if (currentPage === 'library') {
-  const assessments = [
-    {
-      id: 'academic-pressure',
-      title: 'Academic Pressure',
-      description: 'Explore how schoolwork, expectations, and future plans affect you.',
-      duration: '3–5 min',
-      available: true,
-      icon: '📚',
-    },
-    {
-      id: 'self-esteem',
-      title: 'Self-Esteem',
-      description: 'Explore how you view yourself and evaluate your own worth.',
-      duration: 'Coming soon',
-      available: false,
-      icon: '💗',
-    },
-    {
-      id: 'boundaries',
-      title: 'Personal Boundaries',
-      description: 'Reflect on saying no, expressing needs, and communicating limits.',
-      duration: 'Coming soon',
-      available: false,
-      icon: '🛡️',
-    },
-    {
-      id: 'procrastination',
-      title: 'Procrastination',
-      description: 'Explore patterns that make it difficult to start or finish tasks.',
-      duration: 'Coming soon',
-      available: false,
-      icon: '⏳',
-    },
-  ]
+    const assessments = [
+      {
+        id: 'academic-pressure',
+        title: 'Academic Pressure',
+        description: 'Explore how schoolwork, expectations, and future plans affect you.',
+        duration: '3–5 min',
+        available: true,
+        icon: '📚',
+      },
+      {
+        id: 'self-esteem',
+        title: 'Self-Esteem',
+        description: 'Explore how you view yourself and evaluate your own worth.',
+        duration: 'Coming soon',
+        available: false,
+        icon: '💗',
+      },
+      {
+        id: 'boundaries',
+        title: 'Personal Boundaries',
+        description: 'Reflect on saying no, expressing needs, and communicating limits.',
+        duration: 'Coming soon',
+        available: false,
+        icon: '🛡️',
+      },
+      {
+        id: 'procrastination',
+        title: 'Procrastination',
+        description: 'Explore patterns that make it difficult to start or finish tasks.',
+        duration: 'Coming soon',
+        available: false,
+        icon: '⏳',
+      },
+    ]
 
-  return (
-    <main className="app assessment-page">
-      <button
-        className="text-button"
-        onClick={() => setCurrentPage('home')}
-      >
-        ← Back to home
-      </button>
-
-      <section className="library-header">
-        <p className="eyebrow">YOUR SELF-DISCOVERY SPACE</p>
-        <h1>Explore yourself</h1>
-        <p>
-          Choose a topic you would like to understand better.
-          Take your time — there are no right or wrong answers.
-        </p>
-      </section>
-
-      <section className="assessment-library">
-        {assessments.map((assessment) => (
-          <article className="assessment-tile" key={assessment.id}>
-            <span className="assessment-icon">{assessment.icon}</span>
-            <h2>{assessment.title}</h2>
-            <p>{assessment.description}</p>
-            <span className="assessment-duration">
-              {assessment.duration}
-            </span>
-
-            <button
-              className={
-                assessment.available
-                  ? 'primary-button'
-                  : 'secondary-button'
-              }
-              disabled={!assessment.available}
-              onClick={() => {
-                if (assessment.id === 'academic-pressure') {
-                  startAssessment()
-                }
-              }}
-            >
-              {assessment.available ? 'Start assessment →' : 'Coming soon'}
-            </button>
-          </article>
-        ))}
-      </section>
-    </main>
-  )
-}
-
-if (currentPage === 'assessment') {
-  const question = academicPressureQuestions[currentQuestion]
-  const selectedAnswer = answers[question.id]
-
-  return (
-    <main className="app assessment-page">
-      <button
-        className="text-button"
-        onClick={() => setCurrentPage('home')}
-      >
-        ← Back to home
-      </button>
-
-      <section className="assessment-card">
-        <p className="eyebrow">FERRET AID ASSESSMENTS</p>
-
-        <h1>Academic Pressure</h1>
-
-        <p>
-          Question {currentQuestion + 1} of{' '}
-          {academicPressureQuestions.length}
-        </p>
-
-        <div className="progress-track">
-          <div
-            className="progress-fill"
-            style={{
-              width: `${
-                ((currentQuestion + 1) /
-                  academicPressureQuestions.length) *
-                100
-              }%`,
-            }}
-          />
-        </div>
-
-        <h2>{question.text}</h2>
-
-        <p>Think about the past two weeks.</p>
-
-        <div className="answer-options">
-          {academicPressureOptions.map((option) => (
-            <button
-              key={String(option.value)}
-              type="button"
-              className={`answer-option ${
-                selectedAnswer === option.value ? 'selected' : ''
-              }`}
-              onClick={() => selectAnswer(option.value)}
-              aria-pressed={selectedAnswer === option.value}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="primary-button"
-          disabled={selectedAnswer === undefined}
-          onClick={nextQuestion}
-        >
-          {currentQuestion === academicPressureQuestions.length - 1
-            ? 'View results →'
-            : 'Next question →'}
-        </button>
-      </section>
-    </main>
-  )
-}
-
-if (currentPage === 'results') {
-  const results = calculateResults()
-
-  return (
-    <main className="app assessment-page">
-      <section className="assessment-card">
-        <p className="eyebrow">YOUR REFLECTION</p>
-        <h1>Your Academic Pressure Results</h1>
-
-        <p>
-          These scores summarize your answers. They are not a diagnosis
-          or a validated measure of stress severity.
-        </p>
-
-        {results.map((result) => (
-          <article className="result-card" key={result.category}>
-            <h2>{result.title}</h2>
-
-            {result.average === null ? (
-              <p>Not enough answers to calculate this result.</p>
-            ) : (
-              <>
-                <p>
-                  Average response: {result.average.toFixed(1)} / 4
-                </p>
-                <p>
-                  {result.answered} of 3 questions answered
-                </p>
-              </>
-            )}
-          </article>
-        ))}
-
-        <button
-          className="primary-button"
-          onClick={() => setCurrentPage('home')}
-        >
-          Back to home
-        </button>
-
+    return (
+      <main className="app assessment-page">
         <button
           className="text-button"
-          onClick={startAssessment}
+          onClick={() => setCurrentPage('home')}
         >
-          Retake assessment
+          ← Back to home
         </button>
-      </section>
-    </main>
-  )
-}
+
+        <section className="library-header">
+          <p className="eyebrow">YOUR SELF-DISCOVERY SPACE</p>
+          <h1>Explore yourself</h1>
+          <p>
+            Choose a topic you would like to understand better.
+            Take your time — there are no right or wrong answers.
+          </p>
+        </section>
+
+        <section className="assessment-library">
+          {assessments.map((assessment) => (
+            <article className="assessment-tile" key={assessment.id}>
+              <span className="assessment-icon">{assessment.icon}</span>
+              <h2>{assessment.title}</h2>
+              <p>{assessment.description}</p>
+              <span className="assessment-duration">
+                {assessment.duration}
+              </span>
+
+              <button
+                className={
+                  assessment.available
+                    ? 'primary-button'
+                    : 'secondary-button'
+                }
+                disabled={!assessment.available}
+                onClick={() => {
+                  if (assessment.id === 'academic-pressure') {
+                    startAssessment()
+                  }
+                }}
+              >
+                {assessment.available ? 'Start assessment →' : 'Coming soon'}
+              </button>
+            </article>
+          ))}
+        </section>
+      </main>
+    )
+  }
+
+  if (currentPage === 'assessment') {
+    const question = academicPressureQuestions[currentQuestion]
+    const selectedAnswer = answers[question.id]
+
+    return (
+      <main className="app assessment-page">
+        <button
+          className="text-button"
+          onClick={() => setCurrentPage('home')}
+        >
+          ← Back to home
+        </button>
+
+        <section className="assessment-card">
+          <p className="eyebrow">FERRET AID ASSESSMENTS</p>
+
+          <h1>Academic Pressure</h1>
+
+          <p>
+            Question {currentQuestion + 1} of{' '}
+            {academicPressureQuestions.length}
+          </p>
+
+          <div className="progress-track">
+            <div
+              className="progress-fill"
+              style={{
+                width: `${((currentQuestion + 1) /
+                    academicPressureQuestions.length) *
+                  100
+                  }%`,
+              }}
+            />
+          </div>
+
+          <h2>{question.text}</h2>
+
+          <p>Think about the past two weeks.</p>
+
+          <div className="answer-options">
+            {academicPressureOptions.map((option) => (
+              <button
+                key={String(option.value)}
+                type="button"
+                className={`answer-option ${selectedAnswer === option.value ? 'selected' : ''
+                  }`}
+                onClick={() => selectAnswer(option.value)}
+                aria-pressed={selectedAnswer === option.value}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="primary-button"
+            disabled={selectedAnswer === undefined}
+            onClick={nextQuestion}
+          >
+            {currentQuestion === academicPressureQuestions.length - 1
+              ? 'View results →'
+              : 'Next question →'}
+          </button>
+        </section>
+      </main>
+    )
+  }
+
+  if (currentPage === 'results') {
+    const results = calculateResults()
+
+    return (
+      <main className="app assessment-page">
+        <section className="assessment-card">
+          <p className="eyebrow">YOUR REFLECTION</p>
+          <h1>Your Academic Pressure Results</h1>
+
+          <p>
+            These scores summarize your answers. They are not a diagnosis
+            or a validated measure of stress severity.
+          </p>
+
+          {results.map((result) => (
+            <article className="result-card" key={result.category}>
+              <h2>{result.title}</h2>
+
+              {result.average === null ? (
+                <p>Not enough answers to calculate this result.</p>
+              ) : (
+                <>
+                  <p>
+                    Average response: {result.average.toFixed(1)} / 4
+                  </p>
+                  <p>
+                    {result.answered} of 3 questions answered
+                  </p>
+                </>
+              )}
+            </article>
+          ))}
+
+          <button
+            className="primary-button"
+            onClick={() => setCurrentPage('home')}
+          >
+            Back to home
+          </button>
+
+          <button
+            className="text-button"
+            onClick={startAssessment}
+          >
+            Retake assessment
+          </button>
+        </section>
+      </main>
+    )
+  }
   return (
     <main className="app" id="home">
       <header className="site-header">
@@ -364,24 +362,27 @@ if (currentPage === 'results') {
           Choose the little mood that feels closest to yours.
         </p>
 
+
         <div className="mood-options">
           {moods.map((mood) => (
             <button
-              className={`mood-option ${
-                selectedMood === mood.id ? 'selected' : ''
-              }`}
-              key={mood.id}
+              className={`mood-option ${selectedMood === mood.name ? 'selected' : ''
+                }`}
+              key={mood.name}
               type="button"
-              onClick={() => handleMoodSelect(mood.id)}
-              aria-pressed={selectedMood === mood.id}
+              onClick={() => handleMoodSelect(mood.name)}
+              aria-pressed={selectedMood === mood.name}
             >
-              <span className={`mood-face mood-${mood.id}`}>
-                {mood.emoji}
-              </span>
+              <img
+                className={`mood-face mood-${mood.name}`}
+                src={mood.image}
+                alt={mood.label}
+              />
               <span>{mood.label}</span>
             </button>
           ))}
         </div>
+
 
         {selectedMood && (
           <form
@@ -461,13 +462,13 @@ if (currentPage === 'results') {
               <p>{feature.description}</p>
 
               {feature.id === 'assessments' && (
-  <button
-    className="primary-button"
-    onClick={openAssessmentLibrary}
-  >
-    Take assessment →
-  </button>
-)}
+                <button
+                  className="primary-button"
+                  onClick={openAssessmentLibrary}
+                >
+                  Take assessment →
+                </button>
+              )}
 
             </article>
           ))}

@@ -1,3 +1,8 @@
+Watch our product walkthrough to explore Ferret Aid's interface, core features, and technical implementation.
+Youtube link : https://youtu.be/jV1oCNq8TeE?si=aJUyNgJRcQUl8j39
+
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

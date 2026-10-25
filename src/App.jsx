@@ -11,7 +11,7 @@ const navigationLinks = [
   { label: 'Home', href: '#home' },
   { label: 'Assessments', href: '#assessments' },
   { label: 'Reflect', href: '#reflect' },
-  { label: 'Learn', href: '#learn' },
+  { label: 'Learn', href: '#learn', page: 'learn' },
 ]
 
 const moods = [
@@ -47,10 +47,12 @@ const features = [
 function App() {
   const [selectedMood, setSelectedMood] = useState(null)
   const [reflection, setReflection] = useState('')
+  const [reflectionEntries, setReflectionEntries] = useState([])
   const [submitted, setSubmitted] = useState(false)
   const [currentPage, setCurrentPage] = useState('home')
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
+  const [learnCategory, setLearnCategory] = useState(null)
   function startAssessment() {
     setCurrentQuestion(0)
     setAnswers({})
@@ -110,13 +112,190 @@ function App() {
     setSubmitted(false)
   }
 
+
   function handleReflectionSubmit(event) {
     event.preventDefault()
 
     if (!selectedMood) return
 
+    if (reflection.trim()) {
+      setReflectionEntries((previous) => [
+        {
+          id: Date.now(),
+          mood: selectedMood,
+          text: reflection.trim(),
+          date: new Date().toLocaleDateString(),
+        },
+        ...previous,
+      ])
+    }
+
     setSubmitted(true)
   }
+
+
+  if (currentPage === 'profile') {
+    return (
+      <main className="app assessment-page profile-page">
+        <button
+          className="text-button"
+          onClick={() => setCurrentPage('home')}
+        >
+          ← Back to home
+        </button>
+
+        <section className="profile-header">
+          <img
+            className="profile-portrait"
+            src="/ferret.png"
+            alt="Ferret profile"
+          />
+
+          <div className="profile-intro">
+            <p className="eyebrow">YOUR PERSONAL SPACE</p>
+            <h1>Profile</h1>
+            <p>
+              A little space to look back on your feelings
+              and understand yourself.
+            </p>
+          </div>
+        </section>
+
+        <section className="history-section">
+          <p className="eyebrow">YOUR JOURNEY</p>
+          <h2>Reflection history</h2>
+          <p className="history-description">
+            Your previous check-ins, all in one place.
+          </p>
+
+          {reflectionEntries.length === 0 ? (
+            <div className="history-empty">
+              <span>🌱</span>
+              <h3>Your story starts here</h3>
+              <p>
+                Your reflections will appear here after
+                you complete a check-in on the home page.
+              </p>
+              <button
+                className="primary-button"
+                onClick={() => setCurrentPage('home')}
+              >
+                Write your first reflection →
+              </button>
+            </div>
+          ) : (
+            <div className="history-list">
+              {reflectionEntries.map((entry) => (
+                <article className="history-entry" key={entry.id}>
+                  <div className="history-entry-top">
+                    <strong>
+                      {entry.mood === 'happy'
+                        ? 'Happy'
+                        : entry.mood === 'neutral'
+                          ? 'Okay'
+                          : 'Feeling low'}
+                    </strong>
+                    <time>{entry.date}</time>
+                  </div>
+                  <p>{entry.text}</p>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+    )
+  }
+
+
+  if (currentPage === 'learn') {
+    return (
+      <main className="app assessment-page">
+        <button
+          className="text-button"
+          onClick={() => setCurrentPage('home')}
+        >
+          ← Back to home
+        </button>
+
+        <section className="library-header" id="learn">
+          <p className="eyebrow">FERRET AID LEARN</p>
+          <h1>Learn and grow</h1>
+          <p>
+            Explore research-informed resources and practical ways
+            to take care of your well-being.
+          </p>
+        </section>
+
+        <section className="assessment-library">
+          <article className="assessment-tile">
+            <span className="assessment-icon">📚</span>
+            <h2>Academic pressure</h2>
+            <p>
+              Explore study stress, expectations, and fear of failure.
+            </p>
+            <a
+              className="primary-button"
+              href="https://www.nhs.uk/mental-health/children-and-young-adults/help-for-teenagers-young-adults-and-students/student-stress-self-help-tips/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explore resources →
+            </a>
+          </article>
+
+          <article className="assessment-tile">
+            <span className="assessment-icon">💗</span>
+            <h2>Family & relationships</h2>
+            <p>
+              Explore communication, boundaries, and difficult conversations.
+            </p>
+            <a
+              className="primary-button"
+              href="https://www.cdc.gov/parenting-teens/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explore resources →
+            </a>
+          </article>
+
+          <article className="assessment-tile">
+            <span className="assessment-icon">🌿</span>
+            <h2>Anxiety & emotional regulation</h2>
+            <p>
+              Learn practical skills for managing stress and difficult moments.
+            </p>
+            <a
+              className="primary-button"
+              href="https://www.who.int/publications/i/item/9789240003927"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explore resources →
+            </a>
+          </article>
+
+          <article className="assessment-tile">
+            <span className="assessment-icon">🌙</span>
+            <h2>Sleep & recovery</h2>
+            <p>
+              Learn about sleep routines, rest, and recovery.
+            </p>
+            <a
+              className="primary-button"
+              href="https://www.nhs.uk/live-well/sleep-and-tiredness/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explore resources →
+            </a>
+          </article>
+        </section>
+      </main>
+    )
+  }
+
   if (currentPage === 'library') {
     const assessments = [
       {
@@ -231,7 +410,7 @@ function App() {
               className="progress-fill"
               style={{
                 width: `${((currentQuestion + 1) /
-                    academicPressureQuestions.length) *
+                  academicPressureQuestions.length) *
                   100
                   }%`,
               }}
@@ -271,6 +450,8 @@ function App() {
     )
   }
 
+
+
   if (currentPage === 'results') {
     const results = calculateResults()
 
@@ -293,12 +474,8 @@ function App() {
                 <p>Not enough answers to calculate this result.</p>
               ) : (
                 <>
-                  <p>
-                    Average response: {result.average.toFixed(1)} / 4
-                  </p>
-                  <p>
-                    {result.answered} of 3 questions answered
-                  </p>
+                  <p>Average response: {result.average.toFixed(1)} / 4</p>
+                  <p>{result.answered} of 3 questions answered</p>
                 </>
               )}
             </article>
@@ -311,16 +488,21 @@ function App() {
             Back to home
           </button>
 
-          <button
-            className="text-button"
-            onClick={startAssessment}
-          >
+          <button className="text-button" onClick={startAssessment}>
             Retake assessment
+          </button>
+
+          <button
+            className="primary-button"
+            onClick={() => setCurrentPage('learn')}
+          >
+            Learn more →
           </button>
         </section>
       </main>
     )
   }
+
   return (
     <main className="app" id="home">
       <header className="site-header">
@@ -331,13 +513,29 @@ function App() {
 
         <nav className="navigation" aria-label="Main navigation">
           {navigationLinks.map((link) => (
-            <a key={link.href} href={link.href}>
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(event) => {
+                if (link.page) {
+                  event.preventDefault()
+                  setCurrentPage(link.page)
+                }
+              }}
+            >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <a className="profile-link" href="#profile">
+        <a
+          className="profile-link"
+          href="#profile"
+          onClick={(event) => {
+            event.preventDefault()
+            setCurrentPage('profile')
+          }}
+        >
           <img
             className="ferret-avatar"
             src="/ferret.png"
@@ -467,6 +665,15 @@ function App() {
                   onClick={openAssessmentLibrary}
                 >
                   Take assessment →
+                </button>
+              )}
+
+              {feature.id === 'learn' && (
+                <button
+                  className="primary-button"
+                  onClick={() => setCurrentPage('learn')}
+                >
+                  Explore resources →
                 </button>
               )}
 

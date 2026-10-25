@@ -12,7 +12,7 @@ html {
 
 body {
   margin: 0;
-  background: #bfe5ff;
+  background: #d4eeff;
   color: #403052;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -645,4 +645,129 @@ a {
 .assessment-card h1,
 .assessment-card h2 {
   color: #403052;
+}
+body {
+  text-shadow: 1px 1px 2px rgba(40, 20, 50, 0.2);
+}
+
+
+/* Profile page */
+
+.profile-page {
+  align-items: stretch;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 28px;
+  margin: 24px 0;
+  background: var(--card-bg, #fff8f5);
+  border-radius: 24px;
+}
+
+.profile-portrait {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.profile-intro h1 {
+  margin: 8px 0;
+}
+
+.profile-intro p:last-child,
+.history-description {
+  line-height: 1.7;
+  opacity: 0.8;
+}
+
+.history-section {
+  width: 100%;
+  max-width: 760px;
+  margin: 12px auto 40px;
+}
+
+.history-section h2 {
+  margin: 8px 0;
+}
+
+.history-empty {
+  margin-top: 20px;
+  padding: 28px;
+  text-align: center;
+  background: var(--card-bg, #fff8f5);
+  border-radius: 20px;
+}
+
+.history-empty > span {
+  font-size: 32px;
+}
+
+.history-empty p {
+  max-width: 420px;
+  margin: 12px auto 20px;
+  line-height: 1.6;
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.history-entry {
+  padding: 18px 20px;
+  border: 1px solid #eadfdf;
+  border-radius: 16px;
+  background: var(--card-bg, #fff);
+}
+
+.history-entry-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-entry-top time {
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+
+.history-entry > p {
+  margin: 12px 0 0;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .profile-header {
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .profile-portrait {
+    width: 100px;
+    height: 100px;
+  }
+
+  .history-empty {
+    padding: 20px;
+  }
+}
+
+
+/* Dark purple profile headings */
+
+.profile-intro h1,
+.history-section h2 {
+  color: #4B286D;
+}
+
+.history-empty h3 {
+  color: #4B286D;
 }

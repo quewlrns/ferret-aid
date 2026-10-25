@@ -5,9 +5,19 @@ from typing import Annotated, Literal, Optional, Any
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 from database import supabase
+from fastapi.middleware.cors import CORSMiddleware
 
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="Hackathon Backend")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -76,11 +86,12 @@ def save_assessment(data: AssessmentRequest):
         }).execute()
 
     except Exception:
+        logger.exception("Failed to save assessment")
         raise HTTPException(
             status_code=500,
             detail="Failed to save assessment results"
         )
-
+    
     return {"success": True, "data": result.data}
 
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'                  
 import './App.css'
 
 import {
@@ -6,6 +6,8 @@ import {
   academicPressureCategories,
   academicPressureOptions,
 } from './data/academicPressure'
+
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
 const navigationLinks = [
   { label: 'Home', href: '#home' },
@@ -53,9 +55,18 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
   const [learnCategory, setLearnCategory] = useState(null)
+  const sessionIdRef = useRef(crypto.randomUUID())
+  const submittedRef = useRef(false)
+  const [submitStatus, setSubmitStatus] = useState('idle')
+  const [submitError, setSubmitError] = useState('')
+
   function startAssessment() {
     setCurrentQuestion(0)
     setAnswers({})
+    sessionIdRef.current = crypto.randomUUID()
+    submittedRef.current = false
+    setSubmitStatus('idle')
+    setSubmitError('')
     setCurrentPage('assessment')
   }
 
@@ -133,6 +144,48 @@ function App() {
     setSubmitted(true)
   }
 
+    async function submitResults() {
+
+    if (submittedRef.current) return
+    submittedRef.current = true
+    setSubmitStatus('sending')
+    setSubmitError('')
+
+    const payload = {
+      session_id: sessionIdRef.current,
+      answers,
+      category_scores: calculateResults().map(({ category, average }) => ({
+        category,
+        score: average,
+      })),
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/assessments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(`HTTP ${response.status}: ${text}`)
+      }
+
+      setSubmitStatus('success')
+    } catch (error) {
+      console.error('Failed to submit the results:', error)
+      submittedRef.current = false
+      setSubmitError(error.message)
+      setSubmitStatus('error')
+    }
+  }
+
+  useEffect(() => {
+
+    if (currentPage === 'results') submitResults()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage])
 
   if (currentPage === 'profile') {
     return (
@@ -480,6 +533,19 @@ function App() {
               )}
             </article>
           ))}
+
+          {submitStatus === 'error' && (
+            <div>
+              <p>could not save your results. Try again: {submitError}</p>
+              <button
+                className="text-button"
+                type="button"
+                onClick={submitResults}
+              >
+                retry
+              </button>
+            </div>
+          )}
 
           <button
             className="primary-button"
